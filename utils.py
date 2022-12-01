@@ -9,10 +9,10 @@ from pprint import pprint
 from copy import deepcopy, copy
 from heapq import heappop, heappush
 from functools import reduce
-try:
-        from aocd import data,lines
-except:
-        pass
+# try:
+#         from aocd import data,lines
+# except:
+#         pass
 
 BIG = 10 ** 999
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
@@ -37,7 +37,8 @@ def input_download(p_Day, p_Filename):
             with open(COOKIE_FILE, 'r') as f:
                 COOKIE = f.read().strip()
         with open(p_Filename, "w") as f:
-                l_Request = requests.get('https://adventofcode.com/2021/day/%s/input' % p_Day, headers={  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5', 'Cache-Control': 'max-age=0', 'Connection': 'keep-alive', 'Cookie': 'session=' + COOKIE, 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0' })
+                l_Request = requests.get('https://adventofcode.com/2022/day/%s/input' % p_Day, 
+                        headers={'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5', 'Cache-Control': 'max-age=0', 'Connection': 'keep-alive', 'Cookie': 'session=' + COOKIE, 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0'})
                 l_Request.raise_for_status()
                 f.write(l_Request.text)
 
@@ -147,7 +148,11 @@ def sub_reduce(p_List):
 def lcm(*p_List):
   return reduce(lambda n, lcm: lcm * n // math.gcd(lcm, n), p_List)
 
-def doesContainB(a, b, c): 
+def doesContainB(a, b, c):
+    """
+    In an infinite sequence, A is the first number, C is the common difference
+    check if the number B will appear in the sequence or not
+    """
     if (a == b): 
         return True
     if ((b - a) * c > 0 and (b - a) % c == 0): 
