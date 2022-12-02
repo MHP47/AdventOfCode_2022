@@ -29,7 +29,22 @@ def part_1(p_Input):
 
 
 def part_2(p_Input):
-    pass
+    data = p_Input.split('\n')
+    # Points for picking type + points for win/draw/loss
+    combo_lookup = {
+        "A X": 3+0,
+        "A Y": 1+3,
+        "A Z": 2+6,
+        "B X": 1+0,
+        "B Y": 2+3,
+        "B Z": 3+6,
+        "C X": 2+0,
+        "C Y": 3+3,
+        "C Z": 1+6,
+        '': 0
+    }
+    return sum(combo_lookup[x] for x in data)
+
 
 
 example_input_1 = '''A Y
@@ -40,5 +55,5 @@ challenge_input = Input('2')
 assert(part_1(example_input_1) == 15)
 print(f"Part 1: {part_1(challenge_input)}")
 
-assert(part_2(example_input_1) == None)
+assert(part_2(example_input_1) == 12)
 print(f"Part 2: {part_2(challenge_input)}")
