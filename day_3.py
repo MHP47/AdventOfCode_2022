@@ -16,7 +16,18 @@ def part_1(p_Input):
     return total
 
 def part_2(p_Input):
-    pass
+    def common(*args):
+        a = set(alphabet+alphabet.upper())
+        for n in args:
+            a = a.intersection(set(n))
+        return a.pop()
+    groupings = p_Input.strip().splitlines()
+    groupings = [groupings[i:i+3] for i in range(0, len(groupings), 3)]
+    total = 0
+    for grp in groupings:
+        c = common(*grp)
+        total += item_lookup[c]
+    return total
 
 
 example_input_1 = """vJrwpWtwJgWrhcsFMMfFFhFp
@@ -30,5 +41,5 @@ challenge_input = Input('3')
 assert(part_1(example_input_1) == 157)
 print(f"Part 1: {part_1(challenge_input)}")
 
-assert(part_2(example_input_1) == None)
+assert(part_2(example_input_1) == 70)
 print(f"Part 2: {part_2(challenge_input)}")
