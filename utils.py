@@ -38,7 +38,13 @@ def input_download(p_Day, p_Filename):
                 COOKIE = f.read().strip()
         with open(p_Filename, "w") as f:
                 l_Request = requests.get('https://adventofcode.com/2022/day/%s/input' % p_Day, 
-                        headers={'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5', 'Cache-Control': 'max-age=0', 'Connection': 'keep-alive', 'Cookie': 'session=' + COOKIE, 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0'})
+                        headers={'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                                'Accept-Language': 'en-US,en;q=0.5',
+                                'Cache-Control': 'max-age=0',
+                                'Connection': 'keep-alive',
+                                'Cookie': 'session=' + COOKIE,
+                                'Upgrade-Insecure-Requests': '1',
+                                'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0'})
                 l_Request.raise_for_status()
                 f.write(l_Request.text)
 
@@ -158,3 +164,29 @@ def doesContainB(a, b, c):
     if ((b - a) * c > 0 and (b - a) % c == 0): 
         return True
     return False
+
+class Grid(dict):
+    """A 2D grid, implemented as a mapping of {(x, y): cell_contents}."""
+    def __init__(self, mapping=(), rows=()):
+        """Initialize with, e.g., either `mapping={(0, 0): 1, (1, 0): 2, ...}`,
+        or `rows=[(1, 2, 3), (4, 5, 6)]."""
+        self.update(mapping if mapping else
+                    {(x, y): val
+                     for y, row in enumerate(rows)
+                     for x, val in enumerate(row)})
+        self.width  = max(x for x, y in self) + 1
+        self.height = max(y for x, y in self) + 1
+
+    def copy(self): return Grid(self)
+
+    def draw(self):
+        for y in range(self.height):
+            for x in range(self.width):
+                print(self[(x,y)], end='')
+            print()
+        print()
+
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
