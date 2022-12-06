@@ -9,7 +9,8 @@ def part_2(p_Input):
     pass
 
 
-example_input_1 = ''
+example_input_1 = """
+"""
 challenge_input = Input('N')
 
 assert(part_1(example_input_1) == None)

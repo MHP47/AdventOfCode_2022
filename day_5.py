@@ -6,7 +6,7 @@ def part_1(p_Input):
     starting_pos = starting_pos.splitlines()
     stacks = parse_ints(starting_pos[-1])
     positions = [starting_pos[-1].index(x) for x in map(str, stacks)]
-    crates = [None]# + [deque() for _ in range(len(stacks))]
+    crates = [None]
     for i in positions:
         crates.append(deque([x[i] for x in starting_pos[:-1] if x[i] != ' ']))
 
@@ -23,7 +23,7 @@ def part_2(p_Input):
     starting_pos = starting_pos.splitlines()
     stacks = parse_ints(starting_pos[-1])
     positions = [starting_pos[-1].index(x) for x in map(str, stacks)]
-    crates = [None]# + [deque() for _ in range(len(stacks))]
+    crates = [None]
     for i in positions:
         crates.append(deque([x[i] for x in starting_pos[:-1] if x[i] != ' ']))
 
