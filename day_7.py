@@ -34,7 +34,37 @@ def part_1(p_Input):
 
 
 def part_2(p_Input):
-    pass
+    commands = deque(p_Input.strip().splitlines())
+    if commands[0] == "$ cd /": _ = commands.popleft()
+
+    path = ['']
+    dirs = {}
+    tree = defaultdict(list)
+
+    while commands:
+        cmd = commands.popleft()
+        if cmd.startswith('$ cd'):
+            if cmd.endswith('..'):
+                path = path[:-1]
+            else:
+                path.append(cmd.split(' ')[-1])
+        elif cmd.startswith('$ ls'):
+            while commands and not commands[0].startswith('$'):
+                tree['/'.join(path)].append(commands.popleft())
+
+    N = deque(tree)
+
+    while N:
+        n = N.popleft()
+        if not any([x.startswith('dir') for x in tree[n]]):
+            dirs[n] = str(sum(map(int, [x.split()[0] for x in tree[n]])))
+        else:
+            tree[n] = flatten([[dirs.get('/'.join((n,x.split()[-1])), x)] for x in tree[n]])
+            N.append(n)
+
+    space_remaining = 70000000 - int(dirs[''])
+    m = min([(k,v) for k,v in dirs.items() if int(v) >= 30000000 - space_remaining], key=lambda x: int(x[1]))
+    return int(m[1])
 
 
 example_input_1 = """$ cd /
@@ -66,5 +96,5 @@ challenge_input = Input('7')
 assert(part_1(example_input_1) == 95437)
 print(f"Part 1: {part_1(challenge_input)}")
 
-assert(part_2(example_input_1) == None)
+assert(part_2(example_input_1) == 24933642)
 print(f"Part 2: {part_2(challenge_input)}")
