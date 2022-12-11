@@ -16,7 +16,19 @@ def part_1(p_Input):
 
 
 def part_2(p_Input):
-    pass
+    crt = []
+    cmds = deque(p_Input.strip().splitlines())
+    x = [0,1,2]
+
+    while cmds:
+        c = cmds.popleft()
+        crt.append('#' if len(crt)%40 in x else '.')
+        if 'addx' in c:
+            crt.append('#' if len(crt)%40 in x else '.')
+            _,a = c.split()
+            x = [y+int(a) for y in x]
+
+    return '\n'.join([cat(n) for n in chunks(crt,40)])
 
 
 example_input_1 = """addx 15
@@ -171,5 +183,12 @@ challenge_input = Input('10')
 assert(part_1(example_input_1) == 13140)
 print(f"Part 1: {part_1(challenge_input)}")
 
-assert(part_2(example_input_1) == None)
-print(f"Part 2: {part_2(challenge_input)}")
+part_2_example_answer = """##..##..##..##..##..##..##..##..##..##..
+###...###...###...###...###...###...###.
+####....####....####....####....####....
+#####.....#####.....#####.....#####.....
+######......######......######......####
+#######.......#######.......#######....."""
+
+assert(part_2(example_input_1) == part_2_example_answer)
+print(f"Part 2: \n{part_2(challenge_input).replace('.', ' ')}")
