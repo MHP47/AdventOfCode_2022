@@ -33,7 +33,33 @@ def part_1(p_Input):
 
 
 def part_2(p_Input):
-    pass
+    data = p_Input.strip().split('\n\n')
+    monkeys = dict()
+    for m in data:
+        n,items,op,tst,t,f = m.splitlines()
+        n = parse_ints(n)[0]
+        items = parse_ints(items)
+        try:
+            op_calc, op_val = parse("  Operation: new = old {} {:d}", op).fixed
+        except AttributeError:
+            op_calc = "**"
+            op_val = 2
+        tst  = parse("  Test: divisible by {:d}", tst).fixed[0]
+        t = parse("    If true: throw to monkey {:d}", t).fixed[0]
+        f = parse("    If false: throw to monkey {:d}", f).fixed[0]
+        monkeys[n] = {'items': deque(items), 'op': [op_calc, op_val], 'test': tst, 'True': t, 'False': f, 'count': 0}
+
+    mod_val = mul_reduce([x['test'] for x in monkeys.values()])
+
+    for _ in range(10000):
+        for m in monkeys:
+            while monkeys[m]['items']:
+                monkeys[m]['count']+=1
+                i = monkeys[m]['items'].popleft()
+                w = eval(f"{i} {monkeys[m]['op'][0]} {monkeys[m]['op'][1]}") % mod_val
+                monkeys[monkeys[m][str(not w%monkeys[m]['test'])]]['items'].append(w)
+
+    return mul_reduce(sorted([v['count'] for k,v in monkeys.items()])[-2:])
 
 
 example_input_1 = """Monkey 0:
@@ -69,5 +95,5 @@ challenge_input = Input('11')
 assert(part_1(example_input_1) == 10605)
 print(f"Part 1: {part_1(challenge_input)}")
 
-assert(part_2(example_input_1) == None)
+assert(part_2(example_input_1) == 2713310158)
 print(f"Part 2: {part_2(challenge_input)}")
