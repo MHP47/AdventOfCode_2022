@@ -60,7 +60,16 @@ def part_1(p_Input):
     return count
 
 def part_2(p_Input):
-    pass
+    rows = p_Input.strip().splitlines()
+    grid = Grid(rows = rows)
+    count = 0
+    for point in grid:
+        row = get_row(grid, point)
+        west, east = row[:X(point)][::-1], row[X(point)+1:]
+        column = get_column(grid, point)
+        north, south = column[:Y(point)][::-1], column[Y(point)+1:]
+        count = max(count, mul_reduce(flatten([[i+1 or 1 for i,z in enumerate(y) if z in [False]][:1] or [len(y)] for y in [[grid[point] > y for y in z] for z in [south, east, north, west]]])))
+    return count
 
 
 example_input_1 = """30373
@@ -74,5 +83,5 @@ challenge_input = Input('8')
 assert(part_1(example_input_1) == 21)
 print(f"Part 1: {part_1(challenge_input)}")
 
-assert(part_2(example_input_1) == None)
+assert(part_2(example_input_1) == 8)
 print(f"Part 2: {part_2(challenge_input)}")
