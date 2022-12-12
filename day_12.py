@@ -50,7 +50,25 @@ def part_1(p_Input):
 
 
 def part_2(p_Input):
-    pass
+    grid = Grid(rows=[[F"S{alphabet}E".index(x) for x in y] for y in p_Input.strip().splitlines()])
+    start = grid.find(0)[0]
+    goal = grid.find(27)[0]
+    grid[start] = 1
+    grid[goal] = 26
+
+    def h_func(x):
+        return cityblock_distance(x, goal)
+
+    def moves_func(s):
+        return [y for y in grid.neighbors(s) if grid[y]<=grid[s]+1]
+
+    start_positions = [k for k,v in grid.items() if v == 1]
+    start_positions = set(x for x in start_positions if x[0] in (0, grid.width-1) or x[1] in (0, grid.height-1))
+    results = []
+    for position in start_positions:
+        results.append((position, astar_search(position, h_func, moves_func)))
+
+    return min([(x[0], len(x[1])-1) for x in results if type(x[1]) == list], key=lambda x: x[1])[1]
 
 
 example_input_1 = """Sabqponm
@@ -64,5 +82,5 @@ challenge_input = Input('12')
 assert(part_1(example_input_1) == 31)
 print(f"Part 1: {part_1(challenge_input)}")
 
-assert(part_2(example_input_1) == None)
+assert(part_2(example_input_1) == 29)
 print(f"Part 2: {part_2(challenge_input)}")
