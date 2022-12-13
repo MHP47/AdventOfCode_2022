@@ -1,4 +1,5 @@
 from utils import *
+from functools import cmp_to_key
 
 
 def _comp(a, b):
@@ -39,7 +40,31 @@ def part_1(p_Input):
 
 
 def part_2(p_Input):
-    pass
+    packets = [eval(x) for x in p_Input.strip().splitlines() if x]
+    packets.append([[2]])
+    packets.append([[6]])
+    # https://docs.python.org/3/howto/sorting.html#comparison-functions
+    def comp(a, b):
+        if isinstance(a, int) and isinstance(b, int):
+            if a < b:
+                return -1
+            elif a == b:
+                return 0
+            else:
+                return 1
+        elif isinstance(a, list) and isinstance(b, list):
+            for c,d in zip(a,b):
+                if t:=comp(c,d):
+                    return t
+            if len(a) > len(b): return 1
+            if len(b) > len(a): return -1
+        else:
+            if isinstance(a, int): a = [a]
+            if isinstance(b, int): b = [b]
+            return comp(a, b)
+
+    n = [0] + sorted(packets, key=cmp_to_key(comp))
+    return n.index([[2]]) * n.index([[6]])
 
 
 example_input_1 = """[1,1,3,1,1]
@@ -71,5 +96,5 @@ challenge_input = Input('13')
 assert(part_1(example_input_1) == 13)
 print(f"Part 1: {part_1(challenge_input)}")
 
-assert(part_2(example_input_1) == None)
+assert(part_2(example_input_1) == 140)
 print(f"Part 2: {part_2(challenge_input)}")
