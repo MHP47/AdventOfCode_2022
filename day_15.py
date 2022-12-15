@@ -1,4 +1,5 @@
 from utils import *
+import functools
 
 
 def part_1(p_Input, row=2_000_000):
@@ -23,25 +24,39 @@ def part_2(p_Input, range_limit=4_000_000):
         for a,b,c,d in [parse_ints(x) for x in p_Input.strip().splitlines()]
     }
 
-    for i,((x,y),c) in enumerate(sensor_ranges.items(),1):
+    @functools.lru_cache(maxsize=None)
+    def check_space(point):
+        if not 0 <= X(point) <= range_limit:
+            return False
+        if not 0 <= Y(point) <= range_limit:
+            return False
+        if any(
+            cityblock_distance(point, q) <= w
+            for q,w in sensor_ranges.items()
+        ):
+            return False
+        return True
+
+    for i,((x,y),c) in enumerate(sensor_ranges.items(), 1):
         outside = set()
-        t = deque([(x,y-c)])
+        t = deque([(x,y-c)]) # This is the top of the diamond range
         while t:
             e = t.popleft()
-            t.extend([n for n in neighbors8(e) if e not in outside and cityblock_distance(n,(x,y))==c])
+            if e in outside: continue
+            for n in neighbors8(e):
+                dist = cityblock_distance(n,(x,y))
+                if dist == c:
+                    t.append(n)
+                elif dist == c + 1:
+                    if not 0<=n[0]<=range_limit \
+                        or not 0<=n[1]<=range_limit:
+                        continue
+                    if not any(
+                        cityblock_distance(n,q) <= w
+                        for q,w in sensor_ranges.items()
+                    ):
+                        return n[0]*4_000_000 + n[1]
             outside.add(e)
-        possible_spaces = set([s
-            for z in outside
-                for s in neighbors8(z)
-                    if cityblock_distance((x,y),s) == c+1
-                        and not any(cityblock_distance(s,q)<=w for q,w in sensor_ranges.items())
-                        and 0<=s[0]<=range_limit
-                        and 0<=s[1]<=range_limit
-        ])
-        if possible_spaces:
-            a,b = possible_spaces.pop()
-            return a*4_000_000 + b
-
 
 
 example_input_1 = """Sensor at x=2, y=18: closest beacon is at x=-2, y=15
