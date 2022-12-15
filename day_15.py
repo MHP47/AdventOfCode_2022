@@ -24,7 +24,8 @@ def part_2(p_Input, range_limit=4_000_000):
         for a,b,c,d in [parse_ints(x) for x in p_Input.strip().splitlines()]
     }
 
-    @functools.lru_cache(maxsize=None)
+    # @functools.lru_cache(maxsize=None)
+    @functools.lru_cache(maxsize=10)
     def check_space(point):
         if not 0 <= X(point) <= range_limit:
             return False
@@ -37,26 +38,14 @@ def part_2(p_Input, range_limit=4_000_000):
             return False
         return True
 
-    for i,((x,y),c) in enumerate(sensor_ranges.items(), 1):
-        outside = set()
-        t = deque([(x,y-c)]) # This is the top of the diamond range
-        while t:
-            e = t.popleft()
-            if e in outside: continue
-            for n in neighbors8(e):
-                dist = cityblock_distance(n,(x,y))
-                if dist == c:
-                    t.append(n)
-                elif dist == c + 1:
-                    if not 0<=n[0]<=range_limit \
-                        or not 0<=n[1]<=range_limit:
-                        continue
-                    if not any(
-                        cityblock_distance(n,q) <= w
-                        for q,w in sensor_ranges.items()
-                    ):
-                        return n[0]*4_000_000 + n[1]
-            outside.add(e)
+    for (x,y),c in sensor_ranges.items():
+        for i in range(c+2):
+            for n in ((x-i, y-c-1+i),
+                      (x+i, y-c-1+i),
+                      (x-i, y+c+1-i),
+                      (x+i, y+c+1-i)):
+                if check_space(n):
+                    return n[0] * 4_000_000 + n[1]
 
 
 example_input_1 = """Sensor at x=2, y=18: closest beacon is at x=-2, y=15
