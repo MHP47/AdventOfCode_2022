@@ -21,7 +21,17 @@ def part_1(p_Input):
 
 
 def part_2(p_Input):
-    pass
+    def solve(a,e=None,b=None):
+        if a == 'X' or a.isnumeric(): return a
+        a = solve(*R[a])
+        b = solve(*R[b])
+        return f"({a}){e}({b})"
+
+    R = { y: z.split() for x in p_Input.strip().splitlines() for (y,z) in [x.split(': ')] }
+    R['root'][1] = '-'
+    R['humn'] = 'X'
+
+    return sympy.solve(solve(*R['root']))[0]
 
 
 example_input_1 = """root: pppw + sjmn
@@ -45,5 +55,5 @@ challenge_input = Input('21')
 assert(part_1(example_input_1) == 152)
 print(f"Part 1: {part_1(challenge_input)}")
 
-assert(part_2(example_input_1) == None)
+assert(part_2(example_input_1) == 301)
 print(f"Part 2: {part_2(challenge_input)}")
