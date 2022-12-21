@@ -3,21 +3,14 @@ import sympy
 
 
 def part_1(p_Input):
-    a = [[x.split(': ')[0]] + x.split(': ')[1].split() for x in p_Input.strip().splitlines()]
-    b = deque(a)
-    d = dict()
+    def solve(a,e=None,b=None):
+        if a == 'X' or a.isnumeric(): return a
+        a = solve(*R[a])
+        b = solve(*R[b])
+        return f"({a}){e}({b})"
 
-    while b:
-        i = b.popleft()
-        if len(i) == 2:
-            d[i[0]] = int(i[1])
-            continue
-        if i[1] in d and i[3] in d:
-            d[i[0]] = eval(f"{d[i[1]]}{i[2]}{d[i[3]]}")
-        else:
-            b.append(i)
-
-    return int(d['root'])
+    R = { y: z.split() for x in p_Input.strip().splitlines() for (y,z) in [x.split(': ')] }
+    return int(eval(solve(*R['root'])))
 
 
 def part_2(p_Input):
