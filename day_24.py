@@ -1,5 +1,6 @@
 from utils import *
 from copy import deepcopy
+import functools
 
 
 N4 = ((0, 1), (1, 0), (0, -1), (-1, 0))
@@ -82,7 +83,53 @@ def part_1(p_Input):
 
 
 def part_2(p_Input):
-    pass
+    grid = Grid(rows=p_Input.strip().splitlines())
+    start = [(x,y) for (x,y),v in grid.items() if v == '.' and y == 0][0]
+    goal =  [(x,y) for (x,y),v in grid.items() if v == '.' and y == grid.height-1][0]
+    walls = set(k for k,v in grid.items() if v == '#')
+    blizzards = {k:v for k,v in grid.items() if v in ('<','>','^','v')}
+    lookup = {
+        '<': (-1, 0),
+        '>': (1, 0),
+        '^': (0, -1),
+        'v': (0, 1),
+    }
+    grid.update({ k: '.' for k in blizzards })
+    seen = {frozenset(blizzards)}
+    t = 0
+
+    @functools.lru_cache(maxsize=None)
+    def get_blizz(time):
+        r = set()
+        for k,v in blizzards.items():
+            for _ in range(time):
+                k = tuple(sum(x) for x in zip(k, lookup[v]))
+                if k in walls:
+                    if v == '<':
+                        k = (grid.width-2, k[1])
+                    elif v == '>':
+                        k = (1, k[1])
+                    elif v == '^':
+                        k = (k[0], grid.height-2)
+                    elif v == 'v':
+                        k = (k[0], 1)
+            r.add(k)
+        return r
+
+    M = lcm(grid.width-2, grid.height-2)
+
+    for _ in range(3):
+        state = {start}
+        while goal not in state:
+            t += 1
+            b = set(get_blizz(t%M))
+            n = set()
+            for s in state:
+                n |= set(grid.neighbors(s)) - b
+            state = n
+        start, goal = goal, start
+
+    return t
 
 
 example_input_1 = """#.######
@@ -97,5 +144,5 @@ challenge_input = Input('24')
 assert(part_1(example_input_1) == 18)
 print(f"Part 1: {part_1(challenge_input)}")
 
-assert(part_2(example_input_1) == None)
+assert(part_2(example_input_1) == 54)
 print(f"Part 2: {part_2(challenge_input)}")
